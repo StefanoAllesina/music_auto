@@ -1,0 +1,79 @@
+InfoBegin
+InfoKey: CreationDate
+InfoValue: D:20160210122700-06'00'
+NumberOfPages: 15
+PageMediaBegin
+PageMediaNumber: 1
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 2
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 3
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 4
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 5
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 6
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 7
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 8
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 9
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 10
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 11
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 12
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 13
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 14
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
+PageMediaBegin
+PageMediaNumber: 15
+PageMediaRotation: 0
+PageMediaRect: 0 0 648 864
+PageMediaDimensions: 648 864
