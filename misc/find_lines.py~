@@ -123,8 +123,8 @@ def find_lines(patharg,
          cv2.line(withlines, (0, z[0]), (ncols, z[0]), (255,0,255), 2)
          cv2.line(withlines, (0, z[1]), (ncols, z[1]), (0,255,255), 2)
 
-      show_small_matplot(withlines, cmap = "Spectral")
-      #cv2.imwrite(os.path.split(patharg)[1], withlines)
+      #show_small_matplot(withlines, cmap = "Spectral")
+      cv2.imwrite(os.path.split(patharg)[1], withlines)
    return begin_end_refined
 
 ## Run test
