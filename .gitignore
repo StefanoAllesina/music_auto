@@ -103,6 +103,6 @@ ENV/
 # mypy
 .mypy_cache/
 
-test/Beethoven5_debug/
-test/Beethoven5_pages/
+/test/Beethoven5_debug/
+/test/Beethoven5_pages/
 *Pipfile.lock
