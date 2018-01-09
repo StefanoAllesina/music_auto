@@ -106,3 +106,4 @@ ENV/
 /test/Beethoven5_debug/
 /test/Beethoven5_pages/
 *Pipfile.lock
+.DS_Store
