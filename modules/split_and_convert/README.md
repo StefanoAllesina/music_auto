@@ -67,7 +67,7 @@
         ```
         user$ pipenv install
         ```
-    * Run the module
+    * Run the module (note: the output folder must already exist)
         ```
         user$ pipenv run split.py <path/to/input.pdf> <path/to/output/folder>
         ```
@@ -88,7 +88,7 @@
     ```
     user$ sudo apt-get install -y imagemagick
     ```
-4. Run the tool
+4. Run the tool (note: the output folder must already exist)
     * Clone the repository if you haven't
         ```
         user$ git clone https://github.com/StefanoAllesina/music_auto.git

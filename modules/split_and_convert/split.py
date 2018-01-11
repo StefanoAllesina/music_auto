@@ -2,7 +2,7 @@ import sys
 import os
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
-
+# Function that converts a page from pdf to jpg
 def convert_page(ff):
     #print("converting to jpg file " + ff + "...", end = "\r")
     os.system("convert -density 300 " + ff + " " + ff[:-4] + ".jpg")
@@ -10,6 +10,7 @@ def convert_page(ff):
     os.system("rm " + ff)
     return 0
 
+# Main function of this file
 def split_and_convert(filename, outputfolder, debug = False):
     reader = PdfFileReader(stream=os.path.abspath(filename))
     for i in range(0, reader.numPages):
