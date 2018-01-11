@@ -107,3 +107,6 @@ ENV/
 /test/Beethoven5_pages/
 *Pipfile.lock
 .DS_Store
+mockup/
+music/
+src/Pipfile
