@@ -69,7 +69,7 @@
         ```
     * Run the module (note: the output folder must already exist)
         ```
-        user$ pipenv run split.py <path/to/input.pdf> <path/to/output/folder>
+        user$ pipenv run python split.py <path/to/input.pdf> <path/to/output/folder>
         ```
 
 ### Ubuntu (tested on Ubuntu 16.04 server)
@@ -103,5 +103,5 @@
         ```
     * Run the module
         ```
-        user$ pipenv run split.py <path/to/input.pdf> <path/to/output/folder>
+        user$ pipenv run python split.py <path/to/input.pdf> <path/to/output/folder>
         ```
