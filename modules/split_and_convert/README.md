@@ -50,7 +50,11 @@
         ```
         user$ brew install pipenv
         ```
-4. Run the tool:
+4. Install imagemagick
+    ```
+    user$ brew install imagemagick
+    ```
+5. Run the tool:
     * Clone the repository if you haven't
         ```
         user$ git clone https://github.com/StefanoAllesina/music_auto.git
@@ -80,7 +84,11 @@
     ```
     pip3 install pipenv
     ```
-3. Run the tool
+3. Install imagemagick
+    ```
+    user$ sudo apt-get install -y imagemagick
+    ```
+4. Run the tool
     * Clone the repository if you haven't
         ```
         user$ git clone https://github.com/StefanoAllesina/music_auto.git
