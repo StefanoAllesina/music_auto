@@ -102,6 +102,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
 *Pipfile.lock
 .DS_Store
 mockup/
