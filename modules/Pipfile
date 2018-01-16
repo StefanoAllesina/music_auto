@@ -10,8 +10,8 @@ name = "pypi"
 opencv-python = "*"
 numpy = "*"
 matplotlib = "*"
-"pypdf2" = "*"
-wand = "*"
+"PyPDF2" = "*"
+Wand = "*"
 
 
 [dev-packages]
