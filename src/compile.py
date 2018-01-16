@@ -53,6 +53,7 @@ def compile_flow(flowfile):
 		    lines.append(linename + ".pdf")
 		    img = img[y:(y + h), x:(x + w), :]
 		    cv2.imwrite(linename + ".jpg", img)
+			# write name of file to another csv
 		    os.system("convert " + linename + ".jpg " + linename + ".pdf")
 		    os.system("rm " + linename + ".jpg")
 		else:
