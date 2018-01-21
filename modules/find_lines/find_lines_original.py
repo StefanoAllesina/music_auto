@@ -7,6 +7,7 @@ import numpy as np
 
 def find_staves(page, pagenum):
     original = cv2.imread(page)
+    print(original[495][1060])
     height = original.shape[0]
     width = original.shape[1]
     par_threshold = 128
@@ -33,6 +34,7 @@ def find_staves(page, pagenum):
     contours.reverse()
     boxes = []
     line_number = 0
+
     for i, c in enumerate(contours):
         x, y, w, h = cv2.boundingRect(c)
         my_area = w * h
@@ -46,8 +48,8 @@ def find_staves(page, pagenum):
                 "l": line_number, 
                 "message": "Line " + str(line_number) + " of page " + str(pagenum)
                 }) # x,y -> coordinates of top-right corner; w -> width; h -> height
-    for box in boxes:
-        print(box)
+    return boxes
+
 
 if __name__ == '__main__':
     cl_arguments = sys.argv
@@ -55,4 +57,6 @@ if __name__ == '__main__':
         raise ValueError("not enough arguments")
     page = cl_arguments[1]
     pagenum = cl_arguments[2]
-    find_staves(page, pagenum)
+    boxes = find_staves(page, pagenum)
+    for box in boxes:
+        print(box)
