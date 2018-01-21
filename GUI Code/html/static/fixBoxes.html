@@ -6,100 +6,37 @@
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-            rect {
-                stroke: blue;
-                stroke-width: 5;
-                fill-opacity: 0;
-                stroke-opacity: 1;
-            }
-            circle {
-                cursor: pointer;
-            }
-        </style>
+        rect {
+            stroke: blue;
+            stroke-width: 5;
+            fill-opacity: 0;
+            stroke-opacity: 1;
+        }
+        circle {
+            cursor: pointer;
+        }
+    </style>
+    
     <script src="lib/snap.svg-min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-        var s = {};
-        var projects = new ProjectArray([]);
-        var page = {};
-        function ProjectArray(array) {
-            this.projects = array;
-            this.add = function(name) {
-                this.projects.push(name);
-            }
-            this.table = function() {
-                var html = '<table><th>Project</th>';
-                for(var i = 0; i < this.projects.length; i++) {
-                    html += '<tr>' + this.projects[i].row + '</tr>';
-                }
-                html += '</table>';
-                return html;
-            }
-        }
-        function Box(boxID, lineNum, x, y, w, h) {
+        function box(boxID, lineNum, x, y, w, h) {
             this.boxID = boxID;
             this.lineNum = lineNum;
             this.x = x;
             this.y = y;
             this.w = w;
             this.h = h;
-            this.rect = {};
-            this.show = function() {
-                this.rect = s.rect(this.x, this.y, this.w, this.h);
-            }
         }
-        function Page(pageNum, boxes) {
+        function page(pageNum, boxes) {
             this.pageNum = pageNum;
             this.boxes = boxes;
         }
-        function Project(name) {
-            this.name = name;
-            this.row = '<td class="score" data-score="' + this.name + '">' + this.name + '</td>';
-        }
-        function loadProjects(projectsArray) {
-            for(var i = 0; i < projectsArray.length; i++) {
-                var project = new Project(projectsArray[i]);
-                projects.add(project);
-            }
-            var table = projects.table();
-            document.getElementById('table').innerHTML = table;
-        }
-        function loadProject(name) {
-            $.ajax({
-                method: "GET",
-                success: function(data) {
-                    page = new Page(2,[]);
-                    loadImage(data.file);
-                    loadBoxes(page, data.boxes);
-                }, 
-                error: function(error) {
-                    console.log(error);
-                },
-                data: JSON.stringify(name),
-                url: '/page',
-                contentType: 'application/json'
-            });
-        }
-        function loadBoxes(page, boxes) {
-            var items = boxes.filter(item => item.page == '2');
-            console.log(items);
-            for(var i = 0; i < items.length; i++) {
-                 var box = new Box(items[i].box_id, items[i].line, items[i].x, items[i].y, items[i].w, items[i].h);
-                 page.boxes.push(items);
-                 box.show();
-            }
-
-        }
-        function loadImage(path) {
-            s = Snap("#image");
-            s.image(path);
-        }
         $(document).ready(function() {
-            
             $.ajax({
                 method: 'GET',
                 success: function(data) {
-                    loadProjects(data);
+                    
                 },
                 error: function(error) {
                     console.log(error);
@@ -107,11 +44,7 @@
                 },
                 url: '/projects'
             });
-            $("#table").on('click', '.score', function(event) {
-                var name = $(event.target).data('score');
-                loadProject(name);
-            });
-            /* var s = Snap("#something");
+            var s = Snap("#something");
             var rect = s.rect(475, 1043, 2545, 162);
             var dragging = 0;
             var handleGroup;
@@ -165,7 +98,7 @@
                 console.log(this.getBBox().w);
                 console.log(this.getBBox().h);
             };
-            rect.dblclick(addHandleFunc); */
+            rect.dblclick(addHandleFunc);
             
         });
         
@@ -173,10 +106,8 @@
     </script>
 </head>
 <body>
-    <div id='table'>
-
-    </div>
-    <svg version="1.1" id="image" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="800px" height="800px" viewBox="0 0 3300 4200" enable-background="new 0 0 3300 4200" xml:space="preserve">
-    </svg>
+        <svg version="1.1" id="something" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="800px" height="800px" viewBox="0 0 3300 4200" enable-background="new 0 0 3300 4200" xml:space="preserve">
+            <image height="4200" width="3300" xlink:href="lib/pg_0002.jpg"></image>
+        </svg>
 </body>
 </html>
