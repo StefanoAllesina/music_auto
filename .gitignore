@@ -108,3 +108,4 @@ ENV/
 mockup/
 music/
 src/Pipfile
+node_modules

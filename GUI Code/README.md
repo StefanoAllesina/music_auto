@@ -1,3 +1,26 @@
+# Using NodeJS
+
+* We will be using NodeJS with Express.  
+    * NodeJS Documentation: https://nodejs.org/docs/latest-v7.x/api/
+    * ExpressJS documentation: https://expressjs.com/en/4x/api.html
+        * You'll want to look at the Application, Request and Response sections of the documentation mostly.
+        * Application is the primary part of express and is usually used like this:
+        ```javascript
+        // the way to include modules in nodejs
+        // the convention is to name required items in camelCase
+        var express = require('express');
+        // creates a singleton instance of the app server
+        // it is called app or server by convention
+        var app = express();
+        app.get('/path', function(request, response) {
+            // do something with the request
+            // do something with the response
+            res.send('Hello World!');
+        });
+        app.listen(3000, function() {
+            console.log('app is listening on port 3000');
+        });
+        ```
 # Install NodeJS
 
 ### macOS
