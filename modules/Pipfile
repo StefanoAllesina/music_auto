@@ -12,7 +12,6 @@ numpy = "*"
 matplotlib = "*"
 "pypdf2" = "*"
 wand = "*"
-pymongo = "*"
 
 
 [dev-packages]
