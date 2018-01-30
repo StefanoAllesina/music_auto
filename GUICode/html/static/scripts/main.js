@@ -1,79 +1,77 @@
+function getCursorPt(x, y) {
+    var svg = document.getElementsByTagName("svg")[0];
+    svg = document.querySelector('svg');
+    var pt = svg.createSVGPoint();
+    pt.x = x;
+    pt.y = y;
+    var cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return cursorpt;
+}
 function Box(boxID, pageNum, lineNum, x, y, w, h) {
     this.boxID = boxID;
     this.lineNum = lineNum;
     this.pageNum = pageNum;
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
+    this.x = new Number(x);
+    this.y = new Number(y);
+    this.w = new Number(w);
+    this.h = new Number(h);
     this.rect = {};
     this.dragging = 0;
     this.handleGroup1;
     this.handleGroup2;
+    this.handle = new Array();
     var self = this;
     this.move1 = function(dx, dy, x, y) {
-        var svg = document.getElementsByTagName("svg")[0];
-        console.log(this.attr("x"));
-        svg = document.querySelector('svg');
-        var pt = svg.createSVGPoint();
-        pt.x = x;
-        pt.y = y;
-        var cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
-        var thisX = new Number(this[0].attr("x"));
-        var thisY = new Number(this[0].attr("y"));
-        var height = new Number(this[0].attr("height"));
-        var width = new Number(this[0].attr("width"));
+        var cursorpt = getCursorPt(x, y);
+        var thisX = new Number(self.rect.attr("x"));
+        var thisY = new Number(self.rect.attr("y"));
+        var height = new Number(self.rect.attr("height"));
+        var width = new Number(self.rect.attr("width"));
         height = height + thisY - cursorpt.y;
         width = width + thisX - cursorpt.x;
-        this[0].attr({
+        self.rect.attr({
             x:cursorpt.x,
             y:cursorpt.y,
             height: height,
             width: width
         });
-        this[1].attr({
+        self.handle[0].attr({
             cx:cursorpt.x,
             cy:cursorpt.y
         });
     }
     this.move2 = function (dx, dy, x, y) {
-        var svg = document.getElementsByTagName("svg")[0];
-        svg = document.querySelector('svg');
-        var pt = svg.createSVGPoint();
-        pt.x = x;
-        pt.y = y;
-        var cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
-        var thisX = new Number(this[0].attr("x"));
-        var thisY = new Number(this[0].attr("y"));
-        var height = new Number(this[0].attr("height"));
-        var width = new Number(this[0].attr("width"));
+        var cursorpt = getCursorPt(x,y);
+        var thisX = new Number(self.rect.attr("x"));
+        var thisY = new Number(self.rect.attr("y"));
+        var height = new Number(self.rect.attr("height"));
+        var width = new Number(self.rect.attr("width"));
         height = cursorpt.y - thisY;
         width = cursorpt.x - thisX;
-        this[0].attr({
+        self.rect.attr({
             height: height,
             width: width
         });
-        this[1].attr({
+        self.handle[1].attr({
             cx: cursorpt.x,
             cy: cursorpt.y
         });
     }
-    this.show = function(svg) {
+    this.show = function(svg, clickHandle) {
         this.rect = svg.rect(this.x, this.y, this.w, this.h);
+        this.rect.click(clickHandle);
+        this.rect.data("boxID", self.boxID);
         var bb = this.rect.getBBox();
-        var handle = new Array();
-        handle[0] = svg.circle(bb.x, bb.y, 20).attr({ class: 'handler' });
-        handle[1] = svg.circle(bb.x + bb.width, bb.y + bb.height, 20).attr({ class: 'handler' });
-        this.handleGroup1 = svg.group(this.rect, handle[0]);
-        this.handleGroup1.drag(this.move1, null, this.stop);
-        this.handleGroup2 = svg.group(this.rect, handle[1]);
-        this.handleGroup2.drag(this.move2, null, this.stop);
+        this.handle[0] = svg.circle(bb.x, bb.y, 20).attr({ class: 'handler' });
+        this.handle[1] = svg.circle(bb.x + bb.width, bb.y + bb.height, 20).attr({ class: 'handler' });
+        this.handle[0].drag(this.move1, null, this.stop);
+        this.handle[1].drag(this.move2, null, this.stop);
     }
     this.stop = function() {
-        var x = this[0].attr("x");
-        var y = this[0].attr("y");
-        var width = this[0].attr("width");
-        var height = this[0].attr("height");
+        var x = self.rect.attr("x");
+        var y = self.rect.attr("y");
+        var width = self.rect.attr("width");
+        var height = self.rect.attr("height");
         self.x = x;
         self.y = y;
         self.width = width;
@@ -85,13 +83,33 @@ function Project(svg, projectName, boxes) {
     this.currentPage = 0;
     this.boxes = boxes;
     this.currentBoxes = [];
-    this.showPage = function(number) {
-        this.currentPage = number;
-        svg.image(`${projectName}/pages/${number}`);
-        this.currentBoxes = this.boxes.filter(function(item) {return item.pageNum == number;});
-        for(var i in this.currentBoxes) {
-            this.currentBoxes[i].show(svg);
+    var self = this;
+    this.showBoxes = function() {
+        self.currentBoxes = self.boxes.filter(function (item) { return item.pageNum == self.currentPage; });
+        for (var i in self.currentBoxes) {
+            self.currentBoxes[i].show(self.svg, self.clickBox);
         }
+    }
+    this.showPage = function(number) {
+        self.currentPage = number;
+        self.svg.clear();
+        self.svg.image(`${projectName}/pages/${number}`);
+        self.showBoxes();
+    }
+    this.clickBox = function(evt) {
+        splitBox(this, evt);
+    }
+    function splitBox(rect, evt) {
+        var boxID = rect.data("boxID");
+        var index = self.boxes.map(function (e) { return e.boxID; }).indexOf(boxID);
+        var box = self.boxes[index];
+        var point = getCursorPt(evt.x, evt.y);
+        var oldWidth = point.x - box.x;
+        var newWidth = box.w - oldWidth;
+        var newBox = new Box('', box.pageNum, box.lineNum, point.x, box.y, newWidth, box.h);
+        box.w = oldWidth;
+        self.boxes.splice(index, 0, newBox);
+        self.showPage(self.currentPage);
     }
 }
 $(document).ready(function() {
