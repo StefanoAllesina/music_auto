@@ -1,10 +1,11 @@
-function Project(svg, projectName, boxes) {
+function Project(svg, projectName, boxes, numPages) {
     this.svg = svg;
     this.currentPage = 0;
     this.boxes = boxes;
     this.currentBoxes = [];
     this.selectedBox = -1;
     var self = this;
+    this.numPages = numPages;
     window.onkeyup = function(e) {
         var key = e.keyCode ? e.keyCode : e.which;
         if (key == 8 && self.selectedBox != -1) {
@@ -24,10 +25,10 @@ function Project(svg, projectName, boxes) {
             self.currentBoxes[i].show(self.svg, self.clickBox);
         }
     }
-    this.showPage = function (number) {
+    this.showPage = function(number) {
         self.currentPage = number;
         self.svg.clear();
-        self.svg.image(`${projectName}/pages/${number}`);
+        self.svg.image(`${projectName}/pages/${self.currentPage}`);
         self.showBoxes();
     }
     this.clickBox = function (evt) {
