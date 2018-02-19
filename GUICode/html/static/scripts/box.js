@@ -13,8 +13,17 @@ function Box(index, boxID, pageNum, lineNum, x, y, w, h) {
     this.handleGroup2;
     this.handle = new Array();
     this.label = {};
+    this.repeatFront;
+    this.repeatEnd;
     this.selected = false;
+    this.svg;
     var self = this;
+    this.showRepeatFront = function() {
+        self.repeatFront = self.svg.image('/symbols/frontRepeat.svg', self.x, self.y, self.h, self.h);
+    }
+    this.showRepeatEnd = function() {
+        self.repeatEnd = self.svg.image('/symbols/endRepeat.svg', self.x+self.w-self.h, self.y, self.h, self.h);
+    }
     
     this.move1 = function (dx, dy, x, y, evt) {
         var cursorpt = getCursorPt(evt.clientX, evt.clientY);
@@ -57,6 +66,7 @@ function Box(index, boxID, pageNum, lineNum, x, y, w, h) {
         });
     }
     this.show = function (svg, clickHandle) {
+        this.svg = svg;
         this.rect = svg.rect(self.x, self.y, self.w, self.h);
         this.rect.click(clickHandle);
         this.rect.data("index", self.index);

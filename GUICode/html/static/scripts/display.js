@@ -46,3 +46,18 @@ function addProjectsToNavBar(projectNameArray) {
     }
     document.getElementById('projects').innerHTML = list;
 }
+
+function showAlert(withText) {
+    var html = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    ${withText}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    </div>`;
+    document.getElementById('alertArea').innerHTML = html;
+    $("#alertArea").find(".alert").alert();
+}
+
+function dismissAlert() {
+    $("#alertArea").find(".alert").alert('close');
+}
