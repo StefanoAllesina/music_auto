@@ -22,7 +22,8 @@ function Box(index, boxID, pageNum, lineNum, x, y, w, h) {
         self.repeatFront = self.svg.image('/symbols/frontRepeat.svg', self.x, self.y, self.h, self.h);
     }
     this.showRepeatEnd = function() {
-        self.repeatEnd = self.svg.image('/symbols/endRepeat.svg', self.x+self.w-self.h, self.y, self.h, self.h);
+        var xPos = Number(self.x) + Number(self.w) - Number(self.h);
+        self.repeatEnd = self.svg.image('/symbols/endRepeat.svg', xPos, self.y, self.h, self.h);
     }
     
     this.move1 = function (dx, dy, x, y, evt) {
