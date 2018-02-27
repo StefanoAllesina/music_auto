@@ -61,3 +61,31 @@ function showAlert(withText) {
 function dismissAlert() {
     $("#alertArea").find(".alert").alert('close');
 }
+
+function ProjectFlowDisplay() {
+    this.element = document.getElementById("ProjectFlowDisplay");
+    var self = this;
+    this.update = function(project) {
+        var html = '<div class="list-group">';
+        var currentData = project.getCurrentPageData();
+        for(var i in currentData.repeats) {
+            var start = project.getIndexForBoxID(currentData.repeats[i].start);
+            var end = project.getIndexForBoxID(currentData.repeats[i].end);
+            if(start && end) {
+                html += `<a class="list-group-item list-group-item-action list-group-item-info" href="#"><strong>Repeat</strong> Start: ${start} End: ${end}</a>`;
+            }
+            
+        }
+        for(var i in currentData.dalSegnos) {
+            var start = project.getIndexForBoxID(currentData.dalSegnos[i].start);
+            var end = project.getIndexForBoxID(currentData.dalSegnos[i].end);
+            var codaSign = project.getIndexForBoxID(currentData.dalSegnos[i].jumpFrom);
+            var coda = project.getIndexForBoxID(currentData.dalSegnos[i].jumpTo);
+            if(start && end && codaSign && coda) {
+                html += `<a class="list-group-item list-group-item-action list-group-item-success" href="#"><strong>D.S.</strong>D.S. Sign: ${start} D.S. Text: ${end} Coda Sign: ${codaSign} Coda: ${coda}</a>`;
+            }
+        }
+        html += '</div>';
+        self.element.innerHTML = html;
+    };
+}
