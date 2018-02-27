@@ -26,7 +26,7 @@ app.get('/:project/pages/:page', function(req, res) {
 
 app.get('/:project/boxes', function(req, res) {
     var project = req.params.project;
-    fs.readFile(path.join(PROJECT_DIR, project, 'boxes.csv'), function(err, data) {
+    /* fs.readFile(path.join(PROJECT_DIR, project, 'boxes.csv'), function(err, data) {
         if(err) {
             console.log(err);
         } else {
@@ -38,15 +38,22 @@ app.get('/:project/boxes', function(req, res) {
                 }
             });
         }
+    }); */
+    fs.readFile(path.join(PROJECT_DIR, project, 'data.json'), function(err, data) {
+        res.set('Content-Type', 'application/json').send(data);
     });
 });
 app.post('/:project/boxes', function(req, res) {
     var project = req.params.project;
     var boxes = req.body.boxes;
     var repeats = req.body.repeats;
-    console.log(boxes);
-    console.log(repeats);
-    res.send('success');
+    fs.writeFile(path.join(PROJECT_DIR, project, 'data.json'), JSON.stringify(req.body), function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            res.send('success');
+        }
+    });
     /* csv.stringify(req.body, {header:true}, function(err, data) {
         fs.writeFile(path.join(PROJECT_DIR, project, 'boxes.csv'), data, function(err) {
             if(err) {

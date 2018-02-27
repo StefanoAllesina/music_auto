@@ -15,6 +15,10 @@ function Box(index, boxID, pageNum, lineNum, x, y, w, h) {
     this.label = {};
     this.repeatFront;
     this.repeatEnd;
+    this.dalSegnoText;
+    this.dalSegnoSign;
+    this.codaEnd;
+    this.codaFront;
     this.selected = false;
     this.svg;
     var self = this;
@@ -36,7 +40,36 @@ function Box(index, boxID, pageNum, lineNum, x, y, w, h) {
         var xPos = Number(self.x) + Number(self.w) - Number(self.h);
         self.repeatEnd = self.svg.image('/symbols/endRepeat.svg', xPos, self.y, self.h, self.h);
     }
-    
+
+    this.showDalSegnoText = function() {
+        var bb = self.rect.getBBox();
+        self.dalSegnoText = self.svg.text(bb.x + bb.width, bb.y, 'D.S.');
+        self.dalSegnoText.attr({
+            'font-size': 100,
+            'fill': 'red'
+        });
+    }
+
+    this.showDalSegnoSign = function() {
+        var size = Number(self.h)/2;
+        self.dalSegnoSign = self.svg.image('/symbols/dalSegno.svg', self.x, Number(self.y) - size, size, size);
+    }
+
+    this.showCodaEnd = function() {
+        var size = Number(self.h)/2;
+        var xPos = Number(self.x) + Number(self.w) - size;
+        self.codaEnd = self.svg.image('/symbols/coda.svg', xPos, Number(self.y) - size, size, size);
+    }
+    this.showCodaFront = function() {
+        var bb = self.rect.getBBox();
+        self.codaFront = self.svg.text(bb.x, bb.y, 'Coda');
+        self.codaFront.attr({
+            'font-size':100,
+            'fill':'red'
+        });
+        // var size = Number(self.h)/2;
+        // self.codaFront = self.svg.image('/symbols/coda.svg', self.x, Number(self.y) - size, size, size);
+    }
     this.move1 = function (dx, dy, x, y, evt) {
         var cursorpt = getCursorPt(evt.clientX, evt.clientY);
         var thisX = new Number(self.rect.attr("x"));
