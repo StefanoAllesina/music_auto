@@ -42,7 +42,12 @@ app.get('/:project/boxes', function(req, res) {
 });
 app.post('/:project/boxes', function(req, res) {
     var project = req.params.project;
-    csv.stringify(req.body, {header:true}, function(err, data) {
+    var boxes = req.body.boxes;
+    var repeats = req.body.repeats;
+    console.log(boxes);
+    console.log(repeats);
+    res.send('success');
+    /* csv.stringify(req.body, {header:true}, function(err, data) {
         fs.writeFile(path.join(PROJECT_DIR, project, 'boxes.csv'), data, function(err) {
             if(err) {
                 console.log(err);
@@ -50,7 +55,7 @@ app.post('/:project/boxes', function(req, res) {
                 res.send('success');
             }
         });
-    });
+    }); */
 });
 
 app.get('/projects', function(req, res) {

@@ -42,22 +42,18 @@ $(document).ready(function() {
         var boxes = project.getFinalBoxes();
         var finalBoxes = [];
         for(var i in boxes) {
-            finalBoxes.push({
-                boxID:boxes[i].boxID,
-                line:boxes[i].lineNum,
-                page: boxes[i].pageNum,
-                x: boxes[i].x,
-                y: boxes[i].y,
-                w: boxes[i].w,
-                h: boxes[i].h
-            });
+            finalBoxes.push(boxes[i].toJSON());
         }
+        var data = {
+            boxes:finalBoxes,
+            repeats:project.repeats
+        };
         console.log(finalBoxes);
         var url = `/${project.projectName}/boxes`;
         $.ajax({
             url: url,
             method: 'POST',
-            data: JSON.stringify(finalBoxes),
+            data: JSON.stringify(data),
             contentType: 'application/json',
             success: function(data) {
                 console.log(data);

@@ -18,6 +18,17 @@ function Box(index, boxID, pageNum, lineNum, x, y, w, h) {
     this.selected = false;
     this.svg;
     var self = this;
+    this.toJSON = function() {
+        return {
+            box_id:this.boxID,
+            line: this.lineNum,
+            page: this.pageNum,
+            x:this.x,
+            y:this.y,
+            w:this.w,
+            h:this.h
+        };
+    }
     this.showRepeatFront = function() {
         self.repeatFront = self.svg.image('/symbols/frontRepeat.svg', self.x, self.y, self.h, self.h);
     }
