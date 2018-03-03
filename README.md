@@ -20,9 +20,12 @@ SA working code for this part. Needs improvements, but it works fine.
 
 ### GUI
 
+<<<<<<< HEAD
 Musical symbols:
 https://www.shareicon.net/repeat-sign-musical-music-lines-notation-signs-pentagram-749663
 
+=======
+>>>>>>> origin/sarah
 ### Compilation
 
 
