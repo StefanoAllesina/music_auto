@@ -3,7 +3,6 @@ var app = express();
 var path = require('path');
 var fs = require('fs');
 var csv = require('csv');
-<<<<<<< HEAD
 var ejs = require('ejs');
 
 var PROJECT_DIR = process.argv[2];
@@ -16,24 +15,6 @@ app.get('/edit', function(req, res) {
     res.render('edit');
 });
 
-=======
-
-var multer = require('multer');
-var ejs = require('ejs');
-var http = require("http");
-var bodyParser = require('body-parser');
-var rimraf = require('rimraf');
-var copydir = require('copy-dir')
-var mkdirp = require('mkdirp')
-
-
-
-
-var PROJECT_DIR = process.argv[2];
-app.use('/', express.static(__dirname + '/static/'));
-app.use(express.json());
-
->>>>>>> origin/sarah
 app.get('/:project/pages', function(req, res) {
     var project = req.params.project;
     fs.readdir(path.join(PROJECT_DIR, project, 'pages'), function(err, pages) {
@@ -52,11 +33,7 @@ app.get('/:project/pages/:page', function(req, res) {
 
 app.get('/:project/boxes', function(req, res) {
     var project = req.params.project;
-<<<<<<< HEAD
     /* fs.readFile(path.join(PROJECT_DIR, project, 'boxes.csv'), function(err, data) {
-=======
-    fs.readFile(path.join(PROJECT_DIR, project, 'boxes.csv'), function(err, data) {
->>>>>>> origin/sarah
         if(err) {
             console.log(err);
         } else {
@@ -68,19 +45,12 @@ app.get('/:project/boxes', function(req, res) {
                 }
             });
         }
-<<<<<<< HEAD
-    }); */
-    fs.readFile(path.join(PROJECT_DIR, project, 'data.json'), function(err, data) {
-        res.set('Content-Type', 'application/json').send(data);
-=======
->>>>>>> origin/sarah
     });
 });
 app.post('/:project/boxes', function(req, res) {
     var project = req.params.project;
     var boxes = req.body.boxes;
     var repeats = req.body.repeats;
-<<<<<<< HEAD
     fs.writeFile(path.join(PROJECT_DIR, project, 'data.json'), JSON.stringify(req.body), function(err) {
         if(err) {
             console.log(err);
@@ -88,11 +58,6 @@ app.post('/:project/boxes', function(req, res) {
             res.send('success');
         }
     });
-=======
-    console.log(boxes);
-    console.log(repeats);
-    res.send('success');
->>>>>>> origin/sarah
     /* csv.stringify(req.body, {header:true}, function(err, data) {
         fs.writeFile(path.join(PROJECT_DIR, project, 'boxes.csv'), data, function(err) {
             if(err) {
@@ -104,7 +69,6 @@ app.post('/:project/boxes', function(req, res) {
     }); */
 });
 
-<<<<<<< HEAD
 app.post('/:project/compile', function(req, res) {
     var project = req.params.project;
     var data = req.body;
@@ -117,8 +81,6 @@ app.post('/:project/compile', function(req, res) {
     });
 });
 
-=======
->>>>>>> origin/sarah
 app.get('/projects', function(req, res) {
     fs.readdir(PROJECT_DIR, function(err, files) {
         if(err) {
@@ -129,11 +91,6 @@ app.get('/projects', function(req, res) {
     });
 });
 
-<<<<<<< HEAD
-app.post('/upload', function(req,res) {
-    console.log(req.files);
-});
-=======
 /********************************************************************/
 //uploaded image will be stored in this file
 var destinationPath = './public/original/';
@@ -412,7 +369,6 @@ app.post('/duplicate', (req, res) =>{
 });
 
 
->>>>>>> origin/sarah
 app.listen(3000, function() {
     console.log('app is listening on port 3000');
 });
