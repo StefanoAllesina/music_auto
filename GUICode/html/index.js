@@ -3,10 +3,17 @@ var app = express();
 var path = require('path');
 var fs = require('fs');
 var csv = require('csv');
+var ejs = require('ejs');
 
 var PROJECT_DIR = process.argv[2];
+app.set('view engine', 'ejs');
 app.use('/', express.static(__dirname + '/static/'));
 app.use(express.json());
+
+
+app.get('/edit', function(req, res) {
+    res.render('edit');
+});
 
 app.get('/:project/pages', function(req, res) {
     var project = req.params.project;
@@ -65,6 +72,18 @@ app.post('/:project/boxes', function(req, res) {
     }); */
 });
 
+app.post('/:project/compile', function(req, res) {
+    var project = req.params.project;
+    var data = req.body;
+    fs.writeFile(path.join(PROJECT_DIR, project, 'data.json'), JSON.stringify(req.body), function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            
+        }
+    });
+});
+
 app.get('/projects', function(req, res) {
     fs.readdir(PROJECT_DIR, function(err, files) {
         if(err) {
@@ -73,6 +92,10 @@ app.get('/projects', function(req, res) {
             res.set('Content-Type', 'application/json').send(JSON.stringify(files));
         }
     });
+});
+
+app.post('/upload', function(req,res) {
+    console.log(req.files);
 });
 app.listen(3000, function() {
     console.log('app is listening on port 3000');
