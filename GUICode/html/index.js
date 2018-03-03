@@ -15,6 +15,12 @@ app.get('/edit', function(req, res) {
     res.render('edit');
 });
 
+app.delete('/:project', function(req, res) {
+    fs.rmdir(path.join(PROJECT_DIR, req.params.project), function(err) {
+        res.send('success');
+    });
+});
+
 app.get('/:project/pages', function(req, res) {
     var project = req.params.project;
     fs.readdir(path.join(PROJECT_DIR, project, 'pages'), function(err, pages) {
@@ -25,6 +31,7 @@ app.get('/:project/pages', function(req, res) {
         }
     });
 });
+
 app.get('/:project/pages/:page', function(req, res) {
     var project = req.params.project;
     var page = req.params.page;
