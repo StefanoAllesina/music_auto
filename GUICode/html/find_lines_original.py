@@ -5,10 +5,15 @@ import cv2
 import csv
 import sys
 import numpy as np
+import json
+from pathlib import Path
 
-def find_staves(page, pagenum, csv_name):
-    original = cv2.imread(page)
-    #print(original[495][1060])
+
+# def find_staves(page, pagenum, csv_name):
+def find_staves(jpg_path, jpg_page_num, box_data, box_id):
+    original = cv2.imread(jpg_path)
+
+
     height = original.shape[0]
     width = original.shape[1]
     par_threshold = 128
@@ -33,40 +38,46 @@ def find_staves(page, pagenum, csv_name):
 
     image, contours, hier = cv2.findContours(horizontal, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours.reverse()
-    boxes = []
     line_number = 0
-    fieldnames = ['x','y','w','h','p','l','message']
 
     for i, c in enumerate(contours):
         x, y, w, h = cv2.boundingRect(c)
         my_area = w * h
         if (my_area < max_area) and (my_area > min_area) and (h > min_height):
+            # boxID page line x y w h
             line_number += 1
-            boxes.append({"x": x, 
-                "y": y, 
-                "w": w, 
-                "h": h, 
-                "p": pagenum,
-                "l": line_number, 
-                "message": "Line " + str(line_number) + " of page " + str(pagenum)
-                }) # x,y -> coordinates of top-right corner; w -> width; h -> height
-    
-    with open(csv_name, 'a') as csvfile:
-        csv_writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
-        if int(pagenum) == 0:
-            csv_writer.writeheader()
-        for row in boxes:
-            csv_writer.writerow(row)
+            data = {"boxID": box_id, "page": jpg_page_num, "line": line_number, "x" : x, "y": y, "w": w, "h": h}
+            box_id += 1
+            box_data.append(data)
 
-    return boxes
+    return box_id
 
 if __name__ == '__main__':
     cl_arguments = sys.argv
-    if len(cl_arguments) < 4:
+    if len(cl_arguments) < 3:
         raise ValueError("not enough arguments")
-    page = cl_arguments[1] #path of file
-    pagenum = cl_arguments[2] #page number
-    csv_name = cl_arguments[3] #name of csv file
-    boxes = find_staves(page, pagenum, csv_name)
-    # for box in boxes:
-    #     print(box)
+    
+    path_to_jpg_folder = cl_arguments[1]
+    output_path_to_json = cl_arguments[2]
+
+    jpg_page_num = 0
+    box_id = 0
+    box_data = []
+
+    while True:
+        #searches for path_to_jpg_folder/0.jpg
+        jpg_path = path_to_jpg_folder + str(jpg_page_num) + ".jpg"
+
+        if Path(jpg_path).is_file():
+            box_id = find_staves(jpg_path, jpg_page_num, box_data, box_id)
+        else:
+            break
+
+        
+        jpg_page_num += 1
+
+    output = output_path_to_json + "data.json"
+    with open(output, 'w') as outfile:  
+        json.dump(box_data, outfile)
+
+
