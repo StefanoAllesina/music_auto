@@ -110,3 +110,4 @@ music/
 src/Pipfile
 node_modules
 practice
+package-lock.json
