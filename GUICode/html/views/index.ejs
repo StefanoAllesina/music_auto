@@ -24,17 +24,20 @@
     <body>
         <% include navbar %>
         <div class="container-fluid">
-            <div class="col-sm-6">
-                <div class="list-group" id="projects">
-
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="list-group" id="projects">
+                
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <form enctype="multipart/form-data" method="POST" action="/upload">
+                        <input name="file" type="file">
+                        <input type="submit">
+                    </form>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <form enctype="multipart/form-data" method="POST" action="/upload">
-                    <input name="file" type="file">
-                    <input type="submit">
-                </form>
-            </div>
+            
         </div>
     </body>
 </html>
