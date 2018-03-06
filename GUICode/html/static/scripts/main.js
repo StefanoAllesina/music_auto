@@ -92,6 +92,28 @@ $(document).ready(function() {
             }
         });
     });
+    $("#compileButton").click(function () {
+        var finalBoxes = [];
+        for (var i in project.boxes) {
+            finalBoxes.push(project.boxes[i].toJSON());
+        }
+        var data = {
+            boxes: finalBoxes,
+            repeats: project.repeats,
+            dalSegnos: project.dalSegnos
+        };
+        console.log(data);
+        var url = `/edit/${project.projectName}/compile`;
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (data) {
+                console.log(data);
+            }
+        });
+    });
     $("#toolbar").on('click', '.nav-link', function(event) {
         var item = $(event.target).text();
         if($(event.target).hasClass("disabled")) {
