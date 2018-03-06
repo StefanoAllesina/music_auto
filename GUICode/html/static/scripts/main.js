@@ -1,7 +1,36 @@
 
 $(document).ready(function() {
     var project;
+    var name = projectName;
+    console.log(name);
+    var url = `/edit/${name}/boxes`;
     $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            console.log(data);
+            var boxData = data.boxes;
+            var repeats = data.repeats;
+            var dalSegnos = data.dalSegnos;
+            var boxes = [];
+            var numPages = boxData[boxData.length - 1].page + 1;
+            for (var i in boxData) {
+                // if(boxData[i].page > numPages) {
+                //     numPages = boxData[i].page;
+                // }
+                var box = new Box(i, boxData[i].boxID, boxData[i].page, boxData[i].line, boxData[i].x, boxData[i].y, boxData[i].w, boxData[i].h);
+                boxes.push(box);
+            }
+            var s = Snap("#something");
+            project = new Project(s, name, boxes, numPages);
+            project.repeats = repeats;
+            project.dalSegnos = dalSegnos;
+            var pageSwitcher = new PageSwitcher(project.numPages, project.showPage);
+            project.showPage(0);
+            pageSwitcher.setPage(0);
+        }
+    });
+    /* $.ajax({
         method: 'GET',
         success: function(data) {
             addProjectsToNavBar(data);
@@ -11,7 +40,7 @@ $(document).ready(function() {
             window.alert(error);
         },
         url: '/projects'
-    });
+    }); */
     $("#projects").on('click', '.project', function(event) {
         var name = $(event.target).text();
         console.log(name);
@@ -20,18 +49,22 @@ $(document).ready(function() {
             url: url,
             method: 'GET',
             success: function(data) {
+                var boxData = data.boxes;
+                var repeats = data.repeats;
+                var dalSegnos = data.dalSegnos;
                 var boxes = [];
-                console.log(data);
-                var numPages = 0;
-                for(var i in data) {
-                    if(data[i].page > numPages) {
-                        numPages = data[i].page;
-                    }
-                    var box = new Box(i, i, data[i].page, data[i].line, data[i].x, data[i].y, data[i].w, data[i].h);
+                var numPages = boxData[boxData.length-1].page;
+                for(var i in boxData) {
+                    // if(boxData[i].page > numPages) {
+                    //     numPages = boxData[i].page;
+                    // }
+                    var box = new Box(i, boxData[i].box_id, boxData[i].page, boxData[i].line, boxData[i].x, boxData[i].y, boxData[i].w, boxData[i].h);
                     boxes.push(box);
                 }
                 var s = Snap("#something");
                 project = new Project(s, name, boxes, numPages);
+                project.repeats = repeats;
+                project.dalSegnos = dalSegnos;
                 var pageSwitcher = new PageSwitcher(project.numPages, project.showPage);
                 project.showPage(1);
                 pageSwitcher.setPage(1);
@@ -39,17 +72,16 @@ $(document).ready(function() {
         });
     });
     $("#doneButton").click(function() {
-        var boxes = project.getFinalBoxes();
         var finalBoxes = [];
-        for(var i in boxes) {
-            finalBoxes.push(boxes[i].toJSON());
+        for(var i in project.boxes) {
+            finalBoxes.push(project.boxes[i].toJSON());
         }
         var data = {
             boxes:finalBoxes,
-            repeats:project.repeats
+            repeats:project.repeats,
+            dalSegnos:project.dalSegnos
         };
-        console.log(finalBoxes);
-        var url = `/${project.projectName}/boxes`;
+        var url = `/edit/${project.projectName}/boxes`;
         $.ajax({
             url: url,
             method: 'POST',
@@ -73,12 +105,17 @@ $(document).ready(function() {
             showAlert("<strong>Add Repeat</strong> Click to select start of repeat");
             project.editMode = 'repeat';
         } else if(item == "Add Da Capo") {
-            showAlert("<strong>Add Da Capo</strong> Click to select Fine");
-        } else if(item == "Add Dal Segno") {
-            showAlert("<strong>Add Dal Segno</strong> Click to select D.S");
+            showAlert("<strong>Add Da Capo</strong> Click to select beginning");
+        } else if(item == "Add D.S. Al Coda") {
+            showAlert("<strong>Add D.S. Al Coda</strong> Click where D.S. al Coda is written");
+            project.editMode = 'dsC';
         } else if(item == "Split Box") {
             showAlert("<strong>Split Box</strong> Click in box to split");
             project.editMode = 'split';
+        } else if(item == "Add Label (without Bookmark)") {
+
+        } else if(item == "Add Label (with Bookmark)") {
+
         }
         project.unselectBox();
     });

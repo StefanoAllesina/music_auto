@@ -6,15 +6,20 @@ var csv = require('csv');
 var ejs = require('ejs');
 var multer = require('multer');
 var bodyParser = require('body-parser');
+var child_process = require('child_process');
+var upload = multer({dest:path.join(__dirname, 'temp')});
 
-var PROJECT_DIR = process.argv[2];
+var PROJECT_DIR = process.argv[2]; 
 app.set('view engine', 'ejs');
-app.use('/', express.static(__dirname + '/static/'));
-app.use(express.json());
+app.use('/static', express.static(__dirname + '/static/'));
+//app.use(express.json());
 
+app.get('/', function(req, res) {
+    res.render('index');
+});
 
-app.get('/edit', function(req, res) {
-    res.render('edit');
+app.get('/edit/:project', function(req, res) {
+    res.render('edit', {project:req.params.project});
 });
 
 app.delete('/:project', function(req, res) {
@@ -23,7 +28,7 @@ app.delete('/:project', function(req, res) {
     });
 });
 
-app.get('/:project/pages', function(req, res) {
+app.get('/edit/:project/pages', function(req, res) {
     var project = req.params.project;
     fs.readdir(path.join(PROJECT_DIR, project, 'pages'), function(err, pages) {
         if(err) {
@@ -34,29 +39,24 @@ app.get('/:project/pages', function(req, res) {
     });
 });
 
-app.get('/:project/pages/:page', function(req, res) {
+app.get('/edit/:project/pages/:page', function(req, res) {
     var project = req.params.project;
     var page = req.params.page;
     fs.createReadStream(path.join(PROJECT_DIR, project, 'pages', page) + '.jpg').pipe(res);
 });
 
-app.get('/:project/boxes', function(req, res) {
+app.get('/edit/:project/boxes', function(req, res) {
     var project = req.params.project;
-    /* fs.readFile(path.join(PROJECT_DIR, project, 'boxes.csv'), function(err, data) {
+    fs.readFile(path.join(PROJECT_DIR, project, 'data.json'), 'utf8', function(err, data) {
         if(err) {
             console.log(err);
         } else {
-            csv.parse(data, {columns:true}, function(error, rows) {
-                if(error) {
-                    console.log(error);
-                } else {
-                    res.set('Content-Type', 'application/json').send(rows);
-                }
-            });
+            res.set('Content-Type', 'application/json').send(data);
         }
+        
     });
 });
-app.post('/:project/boxes', function(req, res) {
+app.post('/edit/:project/boxes', function(req, res) {
     var project = req.params.project;
     var boxes = req.body.boxes;
     var repeats = req.body.repeats;
@@ -67,18 +67,9 @@ app.post('/:project/boxes', function(req, res) {
             res.send('success');
         }
     });
-    /* csv.stringify(req.body, {header:true}, function(err, data) {
-        fs.writeFile(path.join(PROJECT_DIR, project, 'boxes.csv'), data, function(err) {
-            if(err) {
-                console.log(err);
-            } else {
-                res.send('success');
-            }
-        });
-    }); */
 });
 
-app.post('/:project/compile', function(req, res) {
+app.post('/edit/:project/compile', function(req, res) {
     var project = req.params.project;
     var data = req.body;
     fs.writeFile(path.join(PROJECT_DIR, project, 'data.json'), JSON.stringify(req.body), function (err) {
@@ -91,18 +82,92 @@ app.post('/:project/compile', function(req, res) {
 });
 
 app.get('/projects', function(req, res) {
-    fs.readdir(PROJECT_DIR, function(err, files) {
-        if(err) {
-            console.log(err);
-        } else {
-            res.set('Content-Type', 'application/json').send(JSON.stringify(files));
-        }
+    fs.readdir(PROJECT_DIR, function (err, items) {
+        //Note: apple folders have a .DC_store in every folder
+        var filteredItems = items.filter(function (item) {
+            if (item !== 'original' && item !== '.DS_Store') {
+                return item;
+            }
+        });
+        filteredItems.sort();
+        res.set('Content-Type', 'application/json').send(JSON.stringify(filteredItems));
     });
+});
+
+app.post('/upload', upload.single('file'), function(req,res, next) {
+    console.log(req.file);
+    console.log(req.file.originalname);
+    var fileArray = req.file.originalname.split('.');
+    fileArray.pop();
+    var foldername = fileArray.join('.');
+    if(!fs.existsSync(path.join(PROJECT_DIR, foldername))) {
+        fs.mkdir(path.join(PROJECT_DIR, foldername), function (err) {
+            if (err) {
+                console.log(err);
+            } else {
+                fs.copyFile(req.file.path, path.join(PROJECT_DIR, foldername, req.file.originalname), function (err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        fs.unlink(req.file.path, function(err) {
+                            if(err) {
+                                console.log(err);
+                            }
+                        })
+                        // TODO call split, then findBoxes
+                        fs.mkdir(path.join(PROJECT_DIR, foldername, 'pages'), function (err) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                child_process.exec('pipenv run python split.py ' + path.join(PROJECT_DIR, foldername, req.file.originalname) + ' ' + path.join(PROJECT_DIR, foldername, 'pages'), function(error, stdout) {
+                                    if(error) {
+                                        console.log(error);
+                                    } else {
+                                        console.log(stdout);
+                                        child_process.exec('pipenv run python find_lines_original.py ' + path.join(PROJECT_DIR, foldername, 'pages/') + ' ' + path.join(PROJECT_DIR, foldername), function(error, stdout) {
+                                            if(error) {
+                                                console.log(error);
+                                            } else {
+                                                console.log(stdout);
+                                                fs.readFile(path.join(PROJECT_DIR, foldername, 'data.json'), 'utf8', function(err, data) {
+                                                    if(err) {
+                                                        console.log(err);
+                                                    } else {
+                                                        var newData = {
+                                                            boxes:JSON.parse(data),
+                                                            repeats:[],
+                                                            dalSegnos:[]
+                                                        };
+                                                        fs.writeFile(path.join(PROJECT_DIR, foldername, 'data.json'), JSON.stringify(newData), function(err) {
+                                                            if(err) {
+                                                                console.log(err);
+                                                            } else {
+                                                                res.redirect('/edit/' + foldername);
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        }); 
+                                    }
+                                });
+                            }
+                        });
+                        
+                        
+                    }
+                });
+            }
+        });
+    } else {
+        //folder already exists
+    }
+    
 });
 
 /********************************************************************/
 //uploaded image will be stored in this file
-var destinationPath = './public/original/';
+/* var destinationPath = './public/original/';
 //processed files are kept here
 var processedPath = './public/';
 //Storage engine
@@ -124,8 +189,8 @@ var upload = multer({
 //can do .array instead of .single for array of images
 
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 //child process
 var pythonExecutable = "python";
 
@@ -137,26 +202,13 @@ var Uint8arrayToString = function(data){
 
 
 //EJS
-app.set('view engine', 'ejs');
+// app.set('view engine', 'ejs');
 
 //public folder that will be static
-app.use(express.static('./public'));
-
-var filteredItems;
+// app.use(express.static('./public'))
 
 //finds all previous images that are in folder
-fs.readdir(processedPath, function(err, items)
-    {
-        //Note: apple folders have a .DC_store in every folder
-        filteredItems = items.filter( function(item){
-            if (item !== 'original' && item !== '.DS_Store')
-            {
-                return item;
-            }
-        });
-        filteredItems.sort();
 
-    })
 
 
 app.get('/upload',function(req,res){
@@ -242,8 +294,8 @@ app.post('/upload', (req,res) => {
     }); //end of upload
     } //end of else
 });
-
-
+ */
+/* 
 // Delete
 app.get('/delete', (req, res) => {
     var render = res.render('delete', {
@@ -377,7 +429,7 @@ app.post('/duplicate', (req, res) =>{
     }
 });
 
-
+ */
 app.listen(3000, function() {
     console.log('app is listening on port 3000');
 });

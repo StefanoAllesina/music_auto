@@ -1,6 +1,5 @@
 ## making it into pdf
 #16:9 aspect ratio landscape
-#middle line between, the middle staff in the same. Look at the bottom of the box 
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -138,14 +137,14 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
     maxWidth = 0
 
     with open(path_to_csv) as f:
-        csvr = csv.reader(f)
-        next(csvr, None) # skip header
+        # csvr = csv.reader(f)
+        csvr = csv.DictReader(f)
         for r in csvr:
-            x = int(r[0])
-            y = int(r[1])
-            w = int(r[2])
-            h = int(r[3])
-            page = int(r[4])
+            x = r["x"]
+            y = r["y"]
+            w = r["w"]
+            h = r["h"]
+            page = r["page"]
 
             path_to_jpg_page = path_to_jpgs + str(page) + ".jpg"
             img = cv2.imread(path_to_jpg_page)
