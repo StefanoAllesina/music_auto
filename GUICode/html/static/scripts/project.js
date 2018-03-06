@@ -9,6 +9,8 @@ function Project(svg, projectName, boxes, numPages) {
     this.numPages = numPages;
     this.projectName = projectName;
     this.repeats = [];
+    this.dalSegnos = [];
+    this.projectFlowDisplay = new ProjectFlowDisplay();
     window.onkeyup = function(e) {
         var key = e.keyCode ? e.keyCode : e.which;
         if (key == 8 && self.selectedBox != -1) {
@@ -21,6 +23,35 @@ function Project(svg, projectName, boxes, numPages) {
                 self.showPage(self.currentPage);
             }
         }
+    }
+    this.getIndexForBoxID = function(boxID) {
+        var box = self.currentBoxes.find(function (item) { return item.boxID == boxID; });
+        if(box) {
+            return box.index;
+        } else {
+            return null;
+        }
+    }
+    this.getCurrentPageData = function() {
+        var data = {
+            repeats:[],
+            dalSegnos:[]
+        };
+        for(var i in self.repeats) {
+            if(self.currentBoxes.find(function(item) { return item.boxID == self.repeats[i].start || item.boxID == self.repeats[i].end; })) {
+                data.repeats.push(self.repeats[i]);
+            }
+        }
+        for(var i in self.dalSegnos) {
+            var start = self.dalSegnos[i].start;
+            var end = self.dalSegnos[i].end;
+            var jumpFrom = self.dalSegnos[i].jumpFrom;
+            var jumpTo = self.dalSegnos[i].jumpTo;
+            if(self.currentBoxes.find(function(item) { return item.boxID == start || item.boxID == end || item.boxID == jumpFrom || item.boxID == jumpTo; })) {
+                data.dalSegnos.push(self.dalSegnos[i]);
+            }
+        }
+        return data;
     }
     this.showBoxes = function (handler) {
         self.currentBoxes = self.boxes.filter(function (item) { return item.pageNum == self.currentPage; });
@@ -36,12 +67,21 @@ function Project(svg, projectName, boxes, numPages) {
                         self.currentBoxes[i].showRepeatEnd();
                     }
                 }
+                for (var j in self.dalSegnos) {
+                    if (self.dalSegnos[j].start == self.currentBoxes[i].boxID) {
+                        self.currentBoxes[i].showDalSegnoSign();
+                    }
+                    if (self.dalSegnos[j].end == self.currentBoxes[i].boxID) {
+                        self.currentBoxes[i].showDalSegnoText();
+                    }
+                    if (self.dalSegnos[j].jumpFrom != -1 && self.dalSegnos[j].jumpFrom == self.currentBoxes[i].boxID) {
+                        self.currentBoxes[i].showCodaEnd();
+                    }
+                    if (self.dalSegnos[j].jumpTo != -1 && self.dalSegnos[j].jumpTo == self.currentBoxes[i].boxID) {
+                        self.currentBoxes[i].showCodaFront();
+                    }
+                }
             }
-        }
-    }
-    this.showRepeats = function() {
-        for(var i in self.currentBoxes) {
-            
         }
     }
     this.showPage = function(number) {
@@ -49,6 +89,7 @@ function Project(svg, projectName, boxes, numPages) {
         self.svg.clear();
         self.svg.image(`${self.projectName}/pages/${self.currentPage}`);
         self.showBoxes();
+        self.projectFlowDisplay.update(self);
     }
     this.clickBox = function (evt) {
         var index = this.data("index");
@@ -82,6 +123,7 @@ function Project(svg, projectName, boxes, numPages) {
                 box.showRepeatEnd();
                 self.repeats[self.repeats.length-1].end = box.boxID;
                 dismissAlert();
+                self.projectFlowDisplay.update(self);
                 self.editMode = '';
                 $("#toolbar").find(".nav-link").removeClass("active");
                 $("#toolbar").find(".nav-link").removeClass("disabled");                
@@ -93,6 +135,71 @@ function Project(svg, projectName, boxes, numPages) {
                 self.editMode = '';
                 $("#toolbar").find(".nav-link").removeClass("active");
                 $("#toolbar").find(".nav-link").removeClass("disabled");                
+            }
+        } else if(self.editMode == 'dsC') {
+            if(clickIsAtFrontOfBox(box, evt)) {
+                showAlert('<strong>Add D.S. Al Coda</strong> You can\'t have Dal Segno text at beginning of box');
+            } else if(clickIsAtEndOfBox(box, evt)) {
+                box.showDalSegnoText();
+                self.dalSegnos.push({end:box.boxID});
+                showAlert('<strong>Add D.S. Al Coda</strong> Select the D.S. Sign (jump back to point)');
+                self.editMode = 'dsC2';
+            } else {
+                splitBox(this, evt);
+                self.dalSegnos.push({ end: box.boxID });
+                self.showPage(self.currentPage);
+                showAlert("<strong>Add D.S. Al Coda</strong> Select the D.S. Sign (jump back to point)");
+                self.editMode = 'dsC2';
+            }
+        } else if(self.editMode == 'dsC2') {
+            if(clickIsAtFrontOfBox(box, evt)) {
+                box.showDalSegnoSign();
+                self.dalSegnos[self.dalSegnos.length-1].start = box.boxID;
+                showAlert('<strong>Add D.S. Al Coda</strong> Select the Coda Sign');
+                self.editMode = 'dsC3';
+            } else if(clickIsAtEndOfBox(box,evt)) {
+                showAlert('<strong>Add D.S. Al Coda</strong> You can\'t jump back to the end of a box');
+            } else {
+                var newBox = splitBox(this, evt);
+                self.dalSegnos[self.dalSegnos.length-1].start = newBox.boxID;
+                self.showPage(self.currentPage);
+                showAlert("<strong>Add D.S. Al Coda</strong> Select the Coda Sign");
+                self.editMode = 'dsC3';
+            }
+        } else if(self.editMode == 'dsC3') {
+            if(clickIsAtFrontOfBox(box,evt)) {
+                showAlert('<strong>D.S. Al Coda</strong> You can\' jump to coda from beginning of box (select end of previous)');
+            } else if(clickIsAtEndOfBox(box,evt)) {
+                box.showCodaEnd();
+                self.dalSegnos[self.dalSegnos.length-1].jumpFrom = box.boxID;
+                showAlert('<strong>Add D.S. Al Coda</strong> Select Coda (where the coda music is)');
+                self.editMode = 'dsC4';
+            } else {
+                splitBox(this, evt);
+                self.dalSegnos[self.dalSegnos.length-1].jumpFrom = box.boxID;
+                self.showPage(self.currentPage);
+                showAlert('<strong>Add D.S. Al Coda</strong> Select Coda (where the coda music is)');
+                self.editMode = 'dsC4';
+            }
+        } else if(self.editMode == 'dsC4') {
+            if(clickIsAtFrontOfBox(box,evt)) {
+                box.showCodaFront();
+                self.dalSegnos[self.dalSegnos.length-1].jumpTo = box.boxID;
+                dismissAlert();
+                self.projectFlowDisplay.update(self);
+                self.editMode == '';
+                $("#toolbar").find(".nav-link").removeClass("active");
+                $("#toolbar").find(".nav-link").removeClass("disabled");
+            } else if(clickIsAtEndOfBox(box,evt)) {
+                showAlert('<strong>Add D.S. Al Coda</strong> Coda music can\'t begin at the end of a box');
+            } else {
+                var newBox = splitBox(this, evt);
+                self.dalSegnos[self.dalSegnos.length - 1].jumpTo = newBox.boxID;
+                self.showPage(self.currentPage);
+                dismissAlert();
+                self.editMode = '';
+                $("#toolbar").find(".nav-link").removeClass("active");
+                $("#toolbar").find(".nav-link").removeClass("disabled");
             }
         } else {
             self.unselectBox();
