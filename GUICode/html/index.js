@@ -12,7 +12,7 @@ var upload = multer({dest:path.join(__dirname, 'temp')});
 var PROJECT_DIR = process.argv[2]; 
 app.set('view engine', 'ejs');
 app.use('/static', express.static(__dirname + '/static/'));
-//app.use(express.json());
+app.use(express.json());
 
 app.get('/', function(req, res) {
     res.render('index');
@@ -51,6 +51,7 @@ app.get('/edit/:project/boxes', function(req, res) {
         if(err) {
             console.log(err);
         } else {
+            console.log(data);
             res.set('Content-Type', 'application/json').send(data);
         }
         
@@ -69,14 +70,54 @@ app.post('/edit/:project/boxes', function(req, res) {
     });
 });
 
-app.post('/edit/:project/compile', function(req, res) {
+app.post('/edit/:project/compile', function(req, res) { 
     var project = req.params.project;
     var data = req.body;
     fs.writeFile(path.join(PROJECT_DIR, project, 'data.json'), JSON.stringify(req.body), function (err) {
         if (err) {
             console.log(err);
         } else {
-            
+            var repeats = data.repeats;
+            var boxes = data.boxes;
+            var dalSegnos = data.dalSegnos;
+            var repeatArray = [];
+            for (var i in repeats) {
+                for (var j in boxes) {
+                    if (boxes[j].boxID == repeats[i].start) {
+                        repeatArray = [];
+                        while (boxes[j].boxID != repeats[i].end) {
+                            repeatArray.push(boxes[j]);
+                            j++;
+                        }
+                        repeatArray.push(boxes[j]);
+                        boxes.splice(j + 1, 0, ...repeatArray);
+                        break;
+                    }
+                }
+            }
+            csv.stringify(boxes, {header:true}, function(err, csvData) {
+                if(err) {
+                    console.log(err);
+                    console.log(csvData);
+                } else {
+                    fs.writeFile(path.join(__dirname, 'temp', project+'.csv'), csvData, function(err) {
+                        if(err) {
+                            console.log(err);
+                        } else {
+                            child_process.exec('pipenv run python compile.py ' + path.join(__dirname, 'temp', project+'.csv') + ' ' + path.join(PROJECT_DIR, project, 'pages/') + ' ' + path.join(__dirname, 'temp/') + ' 3', function(error, stdout) {
+                                if(error) {
+                                    console.log(error);
+                                } else {
+                                    console.log(stdout);
+                                    fs.readFile(path.join(__dirname, 'temp', 'pdf_out.pdf'), function(err, finalPdf) {
+                                        res.sendFile(finalPdf);
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+            });
         }
     });
 });
