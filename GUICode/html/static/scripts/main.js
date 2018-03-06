@@ -13,12 +13,12 @@ $(document).ready(function() {
             var repeats = data.repeats;
             var dalSegnos = data.dalSegnos;
             var boxes = [];
-            var numPages = boxData[boxData.length - 1].page;
+            var numPages = boxData[boxData.length - 1].page + 1;
             for (var i in boxData) {
                 // if(boxData[i].page > numPages) {
                 //     numPages = boxData[i].page;
                 // }
-                var box = new Box(i, boxData[i].box_id, boxData[i].page, boxData[i].line, boxData[i].x, boxData[i].y, boxData[i].w, boxData[i].h);
+                var box = new Box(i, boxData[i].boxID, boxData[i].page, boxData[i].line, boxData[i].x, boxData[i].y, boxData[i].w, boxData[i].h);
                 boxes.push(box);
             }
             var s = Snap("#something");
@@ -26,8 +26,8 @@ $(document).ready(function() {
             project.repeats = repeats;
             project.dalSegnos = dalSegnos;
             var pageSwitcher = new PageSwitcher(project.numPages, project.showPage);
-            project.showPage(1);
-            pageSwitcher.setPage(1);
+            project.showPage(0);
+            pageSwitcher.setPage(0);
         }
     });
     /* $.ajax({

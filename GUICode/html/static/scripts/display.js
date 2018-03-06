@@ -1,11 +1,11 @@
 function PageSwitcher(numPages, switchFunc) {
     this.switchFunc = switchFunc;
     this.numPages = numPages;
-    this.currentPage = 0;
+    this.currentPage = -1;
     var self = this;
     var html = '<li id="previous" class="page-item"><a class="page-link" href="#">Previous</a></li>';
-    for (var i = 1; i <= this.numPages; i++) {
-        html += `<li class="page-item" id="page-${i}"><a class="page-link" href="#">${i}</a></li>`;
+    for (var i = 0; i < this.numPages; i++) {
+        html += `<li class="page-item" id="page-${i}"><a class="page-link" href="#">${i+1}</a></li>`;
     }
     html += '<li id="next" class="page-item"><a class="page-link" href="#">Next</a></li>';
     document.getElementById('pageSwitcher').innerHTML = html;
@@ -17,7 +17,7 @@ function PageSwitcher(numPages, switchFunc) {
         } else if(button == 'Next') {
             number += 1;
         } else {
-            number = new Number(button);
+            number = new Number(button)-1;
         }
         self.setPage(number);
         self.switchFunc(number);
@@ -26,13 +26,12 @@ function PageSwitcher(numPages, switchFunc) {
         if(page != this.currentPage) {
             $("#pageSwitcher").find(`#page-${this.currentPage}`).removeClass("active");
             $("#pageSwitcher").find(`#page-${page}`).addClass("active");
-            if(page == 1) {
+            $("#pageSwitcher").find("#previous").removeClass("disabled");
+            $("#pageSwitcher").find("#next").removeClass("disabled");
+            if(page == 0) {
                 $("#pageSwitcher").find("#previous").addClass("disabled");
-            } else if(page == self.numPages) {
+            } else if(page == self.numPages-1) {
                 $("#pageSwitcher").find("#next").addClass("disabled");
-            } else {
-                $("#pageSwitcher").find("#previous").removeClass("disabled");
-                $("#pageSwitcher").find("#next").removeClass("disabled");
             }
             this.currentPage = page;
         }

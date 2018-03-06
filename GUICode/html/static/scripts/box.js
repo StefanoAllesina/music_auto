@@ -24,7 +24,7 @@ function Box(index, boxID, pageNum, lineNum, x, y, w, h) {
     var self = this;
     this.toJSON = function() {
         return {
-            box_id:this.boxID,
+            boxID:this.boxID,
             line: this.lineNum,
             page: this.pageNum,
             x:this.x,

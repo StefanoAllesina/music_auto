@@ -76,7 +76,7 @@ if __name__ == '__main__':
         
         jpg_page_num += 1
 
-    output = output_path_to_json + "data.json"
+    output = output_path_to_json + "/data.json"
     with open(output, 'w') as outfile:  
         json.dump(box_data, outfile)
 

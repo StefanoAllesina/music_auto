@@ -47,7 +47,7 @@ app.get('/edit/:project/pages/:page', function(req, res) {
 
 app.get('/edit/:project/boxes', function(req, res) {
     var project = req.params.project;
-    fs.readFile(path.join(PROJECT_DIR, project, 'data.json'), function(err, data) {
+    fs.readFile(path.join(PROJECT_DIR, project, 'data.json'), 'utf8', function(err, data) {
         if(err) {
             console.log(err);
         } else {
@@ -119,12 +119,36 @@ app.post('/upload', upload.single('file'), function(req,res, next) {
                             if (err) {
                                 console.log(err);
                             } else {
-                                child_process.exec('pipenv run python split2.py ' + path.join(PROJECT_DIR, foldername, req.file.originalname) + ' ' + path.join(PROJECT_DIR, foldername, 'pages'), function(error, stdout) {
+                                child_process.exec('pipenv run python split.py ' + path.join(PROJECT_DIR, foldername, req.file.originalname) + ' ' + path.join(PROJECT_DIR, foldername, 'pages'), function(error, stdout) {
                                     if(error) {
                                         console.log(error);
                                     } else {
                                         console.log(stdout);
-                                        res.redirect('/edit/' + foldername);
+                                        child_process.exec('pipenv run python find_lines_original.py ' + path.join(PROJECT_DIR, foldername, 'pages/') + ' ' + path.join(PROJECT_DIR, foldername), function(error, stdout) {
+                                            if(error) {
+                                                console.log(error);
+                                            } else {
+                                                console.log(stdout);
+                                                fs.readFile(path.join(PROJECT_DIR, foldername, 'data.json'), 'utf8', function(err, data) {
+                                                    if(err) {
+                                                        console.log(err);
+                                                    } else {
+                                                        var newData = {
+                                                            boxes:JSON.parse(data),
+                                                            repeats:[],
+                                                            dalSegnos:[]
+                                                        };
+                                                        fs.writeFile(path.join(PROJECT_DIR, foldername, 'data.json'), JSON.stringify(newData), function(err) {
+                                                            if(err) {
+                                                                console.log(err);
+                                                            } else {
+                                                                res.redirect('/edit/' + foldername);
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        }); 
                                     }
                                 });
                             }
