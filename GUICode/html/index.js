@@ -7,6 +7,7 @@ var ejs = require('ejs');
 var multer = require('multer');
 var bodyParser = require('body-parser');
 var child_process = require('child_process');
+var uuid1 = require('uuid/v1');
 var upload = multer({dest:path.join(__dirname, 'temp')});
 
 var PROJECT_DIR = process.argv[2]; 
@@ -17,6 +18,8 @@ app.use(express.json());
 app.get('/', function(req, res) {
     res.render('index');
 });
+
+app.use('/finished', express.static(__dirname + '/finished/'));
 
 app.get('/edit/:project', function(req, res) {
     res.render('edit', {project:req.params.project});
@@ -100,20 +103,30 @@ app.post('/edit/:project/compile', function(req, res) {
                     console.log(err);
                     console.log(csvData);
                 } else {
-                    fs.writeFile(path.join(__dirname, 'temp', project+'.csv'), csvData, function(err) {
+                    var uniqueFolder = uuid1();
+                    fs.mkdirSync(path.join(__dirname, 'temp', uniqueFolder));
+                    fs.writeFile(path.join(__dirname, 'temp', uniqueFolder, project+'.csv'), csvData, function(err) {
                         if(err) {
                             console.log(err);
                         } else {
-                            child_process.exec('pipenv run python compile.py ' + path.join(__dirname, 'temp', project+'.csv') + ' ' + path.join(PROJECT_DIR, project, 'pages/') + ' ' + path.join(__dirname, 'temp/') + ' 3', function(error, stdout) {
-                                if(error) {
-                                    console.log(error);
-                                } else {
+                            child_process.exec('pipenv run python compile.py ' + path.join(__dirname, 'temp', uniqueFolder, project+'.csv') + ' ' + path.join(PROJECT_DIR, project, 'pages/') + ' ' + path.join(__dirname, 'temp', uniqueFolder, '/') + ' 3', function(error, stdout) {
+                                  if(error) {
+                                      console.log(error);
+                                  } else {
                                     console.log(stdout);
-                                    fs.readFile(path.join(__dirname, 'temp', 'pdf_out.pdf'), function(err, finalPdf) {
-                                        res.sendFile(finalPdf);
-                                    })
+                                    fs.copyFile(path.join(__dirname, 'temp', uniqueFolder, 'pdf_out.pdf'), path.join(__dirname, 'finished', project + '.pdf'), function(err) {
+                                        if(err) {
+                                            console.log(err);
+                                        } else {
+                                            fs.unlinkSync(path.join(__dirname, 'temp', uniqueFolder, project+'.csv'));
+                                            fs.unlinkSync(path.join(__dirname, 'temp', uniqueFolder, 'pdf_out.pdf'));
+                                            fs.rmdirSync(path.join(__dirname, 'temp', uniqueFolder));
+                                            res.send('/finished/' + project + '.pdf');
+                                        }
+                                        
+                                    });
                                 }
-                            })
+                            });
                         }
                     })
                 }

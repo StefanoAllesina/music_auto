@@ -140,19 +140,19 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
         # csvr = csv.reader(f)
         csvr = csv.DictReader(f)
         for r in csvr:
-            x = r["x"]
-            y = r["y"]
-            w = r["w"]
-            h = r["h"]
-            page = r["page"]
+            x = int(float(r["x"]))
+            y = int(float(r["y"]))
+            w = int(float(r["w"]))
+            h = int(float(r["h"]))
+            page = int(float(r["page"]))
 
             path_to_jpg_page = path_to_jpgs + str(page) + ".jpg"
             img = cv2.imread(path_to_jpg_page)
             img = img[y:(y + h), x:(x + w), :]
             boxes_images.append(img)
 
-            maxHeight = max(maxHeight, int(r[3]))
-            maxWidth = max(maxWidth, int(r[2]))
+            maxHeight = max(maxHeight, h)
+            maxWidth = max(maxWidth, w)
 
     #horizontally attaches lines if they're too small
     modifiedLines = attach_short_lines_horizontally(boxes_images)

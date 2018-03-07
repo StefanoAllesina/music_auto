@@ -110,6 +110,8 @@ $(document).ready(function() {
             data: JSON.stringify(data),
             contentType: 'application/json',
             success: function (data) {
+                window.location = data;
+             //   window.open('/temp/pdf_out.pdf', '_blank');
                 console.log(data);
             }
         });
