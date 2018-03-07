@@ -1,11 +1,13 @@
 #!/bin/bash
-sudo yum groupinstall -y "Development Tools"
-sudo yum install -y ImageMagick python36 python36-devel
-sudo pip-3.6 install pipenv
+yum groupinstall -y "Development Tools"
+yum install -y ImageMagick python36 python36-devel
+pip-3.6 install pipenv
 curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
-sudo yum -y install nodejs
+yum -y install nodejs
 git clone https://github.com/StefanoAllesina/music_auto.git -b release-1.0.0
-cd $PWD/GUICode/html
-sudo pipenv install
+cd $PWD/music_auto/GUICode/html
+export PATH="$PATH:/usr/local/bin"
+pipenv install
 npm install
-sudo nohup PORT=80 npm start &
+export PORT=80
+nohup npm start &

@@ -134,19 +134,11 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
         # csvr = csv.reader(f)
         csvr = csv.DictReader(f)
         for r in csvr:
-<<<<<<< HEAD
             x = int(float(r["x"]))
             y = int(float(r["y"]))
             w = int(float(r["w"]))
             h = int(float(r["h"]))
             page = int(float(r["page"]))
-=======
-            x = int(r["x"])
-            y = int(r["y"])
-            w = int(r["w"])
-            h = int(r["h"])
-            page = int(r["page"])
->>>>>>> 1b7dadad2aeec4c68e26744c6ed6a0cb1beded9c
 
             path_to_jpg_page = path_to_jpgs + str(page) + ".jpg"
             img = cv2.imread(path_to_jpg_page)
