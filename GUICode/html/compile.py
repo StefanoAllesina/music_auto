@@ -1,16 +1,11 @@
 ## making it into pdf
 #16:9 aspect ratio landscape
 
-import matplotlib
-matplotlib.use('TkAgg')
-
 import os
 import sys
 import glob
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-import find_lines_original as find_lines
 import csv
 
 
@@ -168,6 +163,7 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
     string = ""
     #makes individual jpgs of eah image
     for i in range(len(finalImages)):
+      print(i)
       string = string + output_path_to_final_pdf + "final" +str(i) + ".jpg "
       cv2.imwrite(output_path_to_final_pdf + "final" + str(i) + ".jpg", finalImages[i])
 

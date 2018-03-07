@@ -11,3 +11,8 @@ pipenv install
 npm install
 export PORT=80
 nohup npm start &
+touch /var/swap.img
+chmod 600 /var/swap.img
+dd if=/dev/zero of=/var/swap.img bs=1024k count=10000
+mkswap /var/swap.img
+swapon /var/swap.img
