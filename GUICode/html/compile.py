@@ -45,19 +45,13 @@ def combine_images_into_one_page(modifiedLines, finalImages, maxHeight, maxWidth
     for i in range(len(modifiedLines)-1):
         page_image = np.ones((totalHeight, totalWidth, channels), np.uint8) *255
         number_lines = number_lines_per_page
-        if i == 0:
-            #first page is an edge case. We assume that the reader is reading the second from the top line
-            #So the 'top' line would be empty for the first page. 
-            number_lines = number_lines_per_page - 1
+ 
 
         for j in range(number_lines):
             if (i+j) <= len(modifiedLines) -1:
                 image = modifiedLines[i + j]
                 height, width = image.shape[:2]
-                if i ==0:
-                    page_image[(verticalSpace*(j+2) - height):verticalSpace*(j+2), leftSpace:width+leftSpace, :channels] = image
-                else:
-                    page_image[(verticalSpace*(j+1) - height):verticalSpace*(j+1), leftSpace:width+leftSpace, :channels] = image
+                page_image[(verticalSpace*(j+1) - height):verticalSpace*(j+1), leftSpace:width+leftSpace, :channels] = image
 
         finalImages.append(page_image)
 
@@ -140,11 +134,19 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
         # csvr = csv.reader(f)
         csvr = csv.DictReader(f)
         for r in csvr:
+<<<<<<< HEAD
             x = int(float(r["x"]))
             y = int(float(r["y"]))
             w = int(float(r["w"]))
             h = int(float(r["h"]))
             page = int(float(r["page"]))
+=======
+            x = int(r["x"])
+            y = int(r["y"])
+            w = int(r["w"])
+            h = int(r["h"])
+            page = int(r["page"])
+>>>>>>> 1b7dadad2aeec4c68e26744c6ed6a0cb1beded9c
 
             path_to_jpg_page = path_to_jpgs + str(page) + ".jpg"
             img = cv2.imread(path_to_jpg_page)
