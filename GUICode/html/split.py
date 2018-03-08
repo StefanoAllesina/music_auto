@@ -38,6 +38,7 @@ def split_and_convert(path_to_pdf, output_folder, debug = False):
 
     return reader.numPages
 
+#rotates pages using HoughLines
 def rotate_page(output_folder, showImage = False):
     jpg_page_num = 0
     while True:
