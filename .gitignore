@@ -111,3 +111,6 @@ src/Pipfile
 node_modules
 practice
 package-lock.json
+projects/*
+temp/*
+finished/*
