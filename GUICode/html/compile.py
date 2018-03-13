@@ -73,11 +73,11 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
         csvr = csv.DictReader(f)
         for r in csvr:
             d = {
-            "x": int(r["x"]),
-            "y": int(r["y"]),
-            "w": int(r["w"]),
-            "h": int(r["h"]),
-            "page": int(r["page"])
+            "x": int(float(r["x"])),
+            "y": int(float(r["y"])),
+            "w": int(float(r["w"])),
+            "h": int(float(r["h"])),
+            "page": int(float(r["page"]))
             }
 
             boxes_data.append(d)
