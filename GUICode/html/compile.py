@@ -1,16 +1,11 @@
 ## making it into pdf
 #16:9 aspect ratio landscape
 
-import matplotlib
-matplotlib.use('TkAgg')
-
 import os
 import sys
 import glob
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-import find_lines_original as find_lines
 import csv
 
 

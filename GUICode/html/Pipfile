@@ -12,7 +12,7 @@ numpy = "*"
 matplotlib = "*"
 "pypdf2" = "*"
 wand = "*"
-
+pathlib = "*"
 
 [dev-packages]
 

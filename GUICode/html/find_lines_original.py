@@ -1,6 +1,3 @@
-import matplotlib
-matplotlib.use('TkAgg')
-from matplotlib import pyplot as plt
 import cv2
 import csv
 import sys
