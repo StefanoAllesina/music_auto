@@ -157,29 +157,32 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
     #Again, this code currently allows an unlimited number of boxes to be attached horizontally.
     #it would be a lot simplier if only two could be attached. 
     while counter_boxes < len(boxes_data):
-        queue_of_line_images.pop(0) #remove the top line
-        bottom_image = getPartialImage(boxes_data[counter_boxes], path_to_jpgs)
-        counter_boxes += 1
+        for i in range(number_lines_per_page -1):
+            queue_of_line_images.pop(0) #removes the top line
 
         #the below checks the next line. If that line and the current bottom line are small enough, they will be concatenated. 
 
 
         # currently, you can concatenate as many boxes horizontally together, as long as they're small. This would be good if there are 3 randomly small boxes right next to each other. 
         # if you want to limit it to at most 2 lines can be concatenated horizontally, replace the below 'while' with an 'if' 
-        while counter_boxes < len(boxes_data):
-            width_next_box = boxes_data[counter_boxes]["w"]
-
-            if bottom_image.shape[1] + width_next_box < maxWidth:
-                print("hiii")
-                img2 = getPartialImage(boxes_data[counter_boxes], path_to_jpgs)
-           
-                bottom_image = attach_images_horizontally(bottom_image, img2)
- 
-                counter_boxes += 1
-            else:
+        for i in range(number_lines_per_page - 1):
+            if counter_boxes >= len(boxes_data): 
                 break
+            bottom_image = getPartialImage(boxes_data[counter_boxes], path_to_jpgs)
+            counter_boxes += 1
+            while counter_boxes < len(boxes_data):
+                width_next_box = boxes_data[counter_boxes]["w"]
 
-        queue_of_line_images.append(bottom_image)
+                if bottom_image.shape[1] + width_next_box < maxWidth:
+                    img2 = getPartialImage(boxes_data[counter_boxes], path_to_jpgs)
+               
+                    bottom_image = attach_images_horizontally(bottom_image, img2)
+     
+                    counter_boxes += 1
+                else:
+                    break
+
+            queue_of_line_images.append(bottom_image)
         page_image = combine_images_into_one_page(image_parameters, queue_of_line_images)
 
         string_of_all_jpg_paths = string_of_all_jpg_paths + output_path_to_final_pdf + "final" + str(pdf_page_num) +".jpg "
@@ -191,12 +194,12 @@ def compile_flow(path_to_csv, path_to_jpgs, output_path_to_final_pdf, number_lin
     #edge case - the last few pages
     #It keeps on popping off line images, until there are only two left.
     #the last page will only have two lines
-    while len(queue_of_line_images) > 2:
-        queue_of_line_images.pop(0)
-        page_image = combine_images_into_one_page(image_parameters, queue_of_line_images)
-        string_of_all_jpg_paths = string_of_all_jpg_paths + output_path_to_final_pdf + "final" + str(pdf_page_num) +".jpg "
-        cv2.imwrite(output_path_to_final_pdf + "final"+str(pdf_page_num)+".jpg", page_image)
-        pdf_page_num += 1
+    # while len(queue_of_line_images) > 2:
+    #     queue_of_line_images.pop(0)
+    #     page_image = combine_images_into_one_page(image_parameters, queue_of_line_images)
+    #     string_of_all_jpg_paths = string_of_all_jpg_paths + output_path_to_final_pdf + "final" + str(pdf_page_num) +".jpg "
+    #     cv2.imwrite(output_path_to_final_pdf + "final"+str(pdf_page_num)+".jpg", page_image)
+    #     pdf_page_num += 1
 
 
 
